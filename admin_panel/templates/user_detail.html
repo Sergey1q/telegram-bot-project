@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.full_name }} | Админ-панель{% endblock %}
+
+{% block content %}
+<div class="container-fluid fade-in">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard">Дашборд</a></li>
+            <li class="breadcrumb-item"><a href="/users">Пользователи</a></li>
+            <li class="breadcrumb-item active">{{ user.full_name }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div style="font-size: 4rem;">👤</div>
+                    <h4>{{ user.full_name }}</h4>
+                    <p>@{{ user.username or 'Нет username' }}</p>
+                    <p>ID: <code>{{ user.telegram_id }}</code></p>
+                    <p>
+                        {% if user.is_blocked %}
+                            <span class="badge bg-danger">Заблокирован</span>
+                        {% else %}
+                            <span class="badge bg-success">Активен</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">📊 Статистика</div>
+                <div class="card-body">
+                    <p>📅 Заявок: <strong>{{ appointments_count }}</strong></p>
+                    <p>💰 Потрачено: <strong>{{ payments_sum|round|int }}₽</strong></p>
+                    <p>⭐ Баланс звёзд: <strong>{{ user.stars_balance }}</strong></p>
+                    <p>📅 Регистрация: {{ user.registered_at.strftime('%d.%m.%Y') }}</p>
+                    <p>🕐 Активность: {{ user.last_active.strftime('%d.%m.%Y %H:%M') }}</p>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">⚡ Действия</div>
+                <div class="card-body d-flex flex-column gap-2">
+                    <form method="post" action="/users/{{ user.id }}/block">
+                        <button type="submit" class="btn btn-{{ 'warning' if not user.is_blocked else 'success' }} w-100">
+                            {% if user.is_blocked %}✅ Разблокировать{% else %}🚫 Заблокировать{% endif %}
+                        </button>
+                    </form>
+                    
+                    <form method="post" action="/users/{{ user.id }}/role">
+                        <select name="role" class="form-select mb-2">
+                            <option value="user" {% if user.role == 'user' %}selected{% endif %}>Пользователь</option>
+                            <option value="moderator" {% if user.role == 'moderator' %}selected{% endif %}>Модератор</option>
+                            <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Администратор</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary w-100">Сохранить роль</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">📋 Последние заявки</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Услуга</th>
+                                    <th>Дата</th>
+                                    <th>Статус</th>
+                                    <th>Цена</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for app in recent_appointments %}
+                                <tr>
+                                    <td><a href="/appointments/{{ app.id }}">#{{ app.id }}</a></td>
+                                    <td>{{ app.service_name }}</td>
+                                    <td>{{ app.appointment_date }}</td>
+                                    <td>{{ app.status.value if app.status is mapping else app.status }}</td>
+                                    <td>{{ app.price|round|int }}₽</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+/* Стили админ-панели */
+body {
+    background-color: #f5f5f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    font-weight: 600;
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.card-header:first-child {
+    border-radius: 10px 10px 0 0;
+}
+
+.stat-card {
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.badge {
+    font-size: 0.85em;
+    padding: 5px 10px;
+}
+
+.table th {
+    font-weight: 600;
+    color: #555;
+}
+
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+.btn-success {
+    background-color: #1cc88a;
+    border-color: #1cc88a;
+}
+
+.btn-warning {
+    background-color: #f6c23e;
+    border-color: #f6c23e;
+    color: #fff;
+}
+
+.sidebar {
+    background: linear-gradient(180deg, #4e73df 0%, #224abe 100%);
+    min-height: 100vh;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 100px auto;
+}
+
+.login-card {
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

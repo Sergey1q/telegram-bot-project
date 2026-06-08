@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Заявка #{{ appointment.id }} | Админ-панель{% endblock %}
+
+{% block content %}
+<div class="container-fluid fade-in">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/dashboard">Дашборд</a></li>
+            <li class="breadcrumb-item"><a href="/appointments">Заявки</a></li>
+            <li class="breadcrumb-item active">#{{ appointment.id }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">📋 Заявка #{{ appointment.id }}</h5>
+                    {% set status = appointment.status.value if appointment.status is mapping else appointment.status %}
+                    {% if status == 'new' %}
+                        <span class="badge bg-warning">🆕 Новая</span>
+                    {% elif status == 'confirmed' %}
+                        <span class="badge bg-success">✅ Подтверждена</span>
+                    {% elif status == 'completed' %}
+                        <span class="badge bg-info">✔️ Выполнена</span>
+                    {% elif status == 'cancelled' %}
+                        <span class="badge bg-danger">❌ Отменена</span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Услуга:</strong> {{ appointment.service_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Стоимость:</strong> {{ appointment.price|round|int }}₽
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Клиент:</strong> {{ appointment.client_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Телефон:</strong> {{ appointment.client_phone }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Email:</strong> {{ appointment.client_email or 'Не указан' }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Оплата:</strong>
+                            {% if appointment.is_paid %}
+                                ✅ {{ appointment.payment_method }}
+                            {% else %}
+                                ❌ Не оплачено
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Дата:</strong> {{ appointment.appointment_date }}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Время:</strong> {{ appointment.appointment_time }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <strong>Комментарий:</strong>
+                        <p class="text-muted">{{ appointment.comment or 'Нет комментария' }}</p>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <small class="text-muted">Создана: {{ appointment.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                        </div>
+                        <div class="col-md-6">
+                            <small class="text-muted">Обновлена: {{ appointment.updated_at.strftime('%d.%m.%Y %H:%M') if appointment.updated_at else appointment.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Действия -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">⚡ Действия</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="/appointments/{{ appointment.id }}/status" class="d-flex flex-wrap gap-2">
+                        <input type="hidden" name="status" value="confirmed">
+                        <button type="submit" class="btn btn-success" {% if status == 'confirmed' %}disabled{% endif %}>
+                            ✅ Подтвердить
+                        </button>
+                    </form>
+                    <form method="post" action="/appointments/{{ appointment.id }}/status" class="d-flex flex-wrap gap-2 mt-2">
+                        <input type="hidden" name="status" value="completed">
+                        <button type="submit" class="btn btn-info" {% if status == 'completed' %}disabled{% endif %}>
+                            ✔️ Выполнено
+                        </button>
+                    </form>
+                    <form method="post" action="/appointments/{{ appointment.id }}/status" class="d-flex flex-wrap gap-2 mt-2">
+                        <input type="hidden" name="status" value="cancelled">
+                        <button type="submit" class="btn btn-danger" {% if status == 'cancelled' %}disabled{% endif %}>
+                            ❌ Отменить
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Клиент -->
+            {% if user %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">👤 Клиент</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>{{ user.full_name }}</strong></p>
+                    <p>@{{ user.username or 'Нет username' }}</p>
+                    <p>ID: {{ user.telegram_id }}</p>
+                    <p>Телефон: {{ user.phone or 'Не указан' }}</p>
+                    <a href="/users/{{ user.id }}" class="btn btn-sm btn-outline-primary">Профиль</a>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Платежи -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">💳 Платежи</h5>
+                </div>
+                <div class="card-body">
+                    {% if payments %}
+                        {% for payment in payments %}
+                        <div class="border rounded p-2 mb-2">
+                            <strong>{{ payment.amount_stars }} ⭐</strong>
+                            <span class="text-muted">({{ payment.amount_rub|round|int }}₽)</span>
+                            <br>
+                            <small class="text-{{ 'success' if payment.status == 'paid' else 'warning' }}">
+                                {{ payment.status }}
+                            </small>
+                            <br>
+                            <small class="text-muted">{{ payment.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Нет платежей</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

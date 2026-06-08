@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Рассылка | Админ-панель{% endblock %}
+
+{% block content %}
+<div class="container-fluid fade-in">
+    <h1 class="mb-4">📢 Рассылка</h1>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📝 Новая рассылка</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        Активных пользователей: <strong>{{ active_users }}</strong>
+                    </div>
+                    
+                    <form method="post" action="/broadcast/send">
+                        <div class="mb-3">
+                            <label class="form-label">Текст сообщения</label>
+                            <textarea name="message_text" class="form-control" rows="6" required placeholder="Введите текст рассылки...&#10;&#10;Поддерживается HTML: <b>жирный</b>, <i>курсив</i>"></textarea>
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" name="preview" class="form-check-input" id="preview_mode">
+                            <label class="form-check-label" for="preview_mode">Предпросмотр (без отправки)</label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            🚀 Отправить рассылку
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">📜 История рассылок</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if history %}
+                    <div class="list-group list-group-flush">
+                        {% for b in history %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">{{ b.sent_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                                <small>
+                                    ✅ {{ b.success_count }} / 
+                                    ❌ {{ b.fail_count }} / 
+                                    📤 {{ b.recipients_count }}
+                                </small>
+                            </div>
+                            <p class="mb-0 mt-1">{{ b.message_text[:100] }}...</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-center text-muted py-4">Нет истории рассылок</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

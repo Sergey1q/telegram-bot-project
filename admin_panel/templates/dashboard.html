@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Дашборд | Админ-панель{% endblock %}
+
+{% block content %}
+<div class="container-fluid fade-in">
+    <h1 class="mb-4">📊 Дашборд</h1>
+    
+    <!-- Карточки статистики -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white stat-card">
+                <div class="card-body">
+                    <h5 class="card-title">👥 Пользователи</h5>
+                    <h2>{{ total_users }}</h2>
+                    <small>+{{ new_users_today }} сегодня</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark stat-card">
+                <div class="card-body">
+                    <h5 class="card-title">📅 Заявки</h5>
+                    <h2>{{ total_appointments }}</h2>
+                    <small>{{ new_appointments }} новых</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white stat-card">
+                <div class="card-body">
+                    <h5 class="card-title">💰 Платежи</h5>
+                    <h2>{{ total_payments }}</h2>
+                    <small>{{ monthly_revenue|int }} ₽ за месяц</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white stat-card">
+                <div class="card-body">
+                    <h5 class="card-title">🔧 Услуги</h5>
+                    <h2>{{ total_services }}</h2>
+                    <small>активных</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- График -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">📈 Заявки за 7 дней</div>
+                <div class="card-body">
+                    <canvas id="appointmentsChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Последние платежи -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">💳 Последние платежи</div>
+                <div class="card-body">
+                    {% if recent_payments %}
+                        {% for payment in recent_payments %}
+                        <div class="mb-2 p-2 border rounded">
+                            <strong>{{ payment.amount_stars }} ⭐</strong>
+                            <small class="text-muted float-end">{{ payment.paid_at }}</small>
+                            <br><small>{{ payment.description[:50] }}</small>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Нет платежей</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Таблица заявок -->
+    <div class="card">
+        <div class="card-header">📋 Последние заявки</div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Клиент</th>
+                            <th>Услуга</th>
+                            <th>Дата</th>
+                            <th>Статус</th>
+                            <th>Оплата</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_appointments %}
+                            {% for app in recent_appointments %}
+                            <tr>
+                                <td><strong>#{{ app.id }}</strong></td>
+                                <td>{{ app.client_name }}</td>
+                                <td>{{ app.service_name }}</td>
+                                <td>{{ app.appointment_date }} {{ app.appointment_time }}</td>
+                                <td>
+                                    {% if app.status == 'new' or app.status == 'NEW' %}
+                                        <span class="badge bg-warning">🆕 Новая</span>
+                                    {% elif app.status == 'confirmed' or app.status == 'CONFIRMED' %}
+                                        <span class="badge bg-success">✅ Подтверждена</span>
+                                    {% elif app.status == 'completed' or app.status == 'COMPLETED' %}
+                                        <span class="badge bg-info">✔️ Выполнена</span>
+                                    {% elif app.status == 'cancelled' or app.status == 'CANCELLED' %}
+                                        <span class="badge bg-danger">❌ Отменена</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ app.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if app.is_paid %}
+                                        ✅ {{ app.payment_method }}
+                                    {% else %}
+                                        ❌
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                                    <p class="mt-2">Заявок пока нет</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var ctx = document.getElementById('appointmentsChart');
+    if (ctx) {
+        new Chart(ctx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: {{ chart_labels | tojson }},
+                datasets: [{
+                    label: 'Заявки',
+                    data: {{ chart_data | tojson }},
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.3,
+                    fill: true,
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

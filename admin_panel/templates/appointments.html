@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}Заявки | Админ-панель{% endblock %}
+
+{% block content %}
+<div class="container-fluid fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>📋 Заявки</h1>
+        <a href="/appointments/export/excel" class="btn btn-success">
+            <i class="bi bi-download"></i> Экспорт Excel
+        </a>
+    </div>
+    
+    <!-- Фильтры -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Статус</label>
+                    <select name="status" class="form-select" onchange="this.form.submit()">
+                        <option value="all" {% if current_status == 'all' %}selected{% endif %}>Все ({{ status_counts.all }})</option>
+                        <option value="new" {% if current_status == 'new' %}selected{% endif %}>Новые ({{ status_counts.new }})</option>
+                        <option value="confirmed" {% if current_status == 'confirmed' %}selected{% endif %}>Подтверждённые ({{ status_counts.confirmed }})</option>
+                        <option value="completed" {% if current_status == 'completed' %}selected{% endif %}>Выполненные ({{ status_counts.completed }})</option>
+                        <option value="cancelled" {% if current_status == 'cancelled' %}selected{% endif %}>Отменённые ({{ status_counts.cancelled }})</option>
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Поиск</label>
+                    <input type="text" name="search" class="form-control" placeholder="Имя, телефон, услуга..." value="{{ search }}">
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">🔍 Найти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Таблица заявок -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Клиент</th>
+                            <th>Телефон</th>
+                            <th>Услуга</th>
+                            <th>Дата</th>
+                            <th>Цена</th>
+                            <th>Статус</th>
+                            <th>Оплата</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if appointments %}
+                            {% for app in appointments %}
+                            <tr>
+                                <td><strong>#{{ app.id }}</strong></td>
+                                <td>{{ app.client_name }}</td>
+                                <td>{{ app.client_phone }}</td>
+                                <td>{{ app.service_name }}</td>
+                                <td>{{ app.appointment_date }} {{ app.appointment_time }}</td>
+                                <td>{{ app.price|round|int }}₽</td>
+                                <td>
+                                    {% set status = app.status.value if app.status is mapping else app.status %}
+                                    {% if status == 'new' %}
+                                        <span class="badge bg-warning">🆕 Новая</span>
+                                    {% elif status == 'confirmed' %}
+                                        <span class="badge bg-success">✅ Подтверждена</span>
+                                    {% elif status == 'completed' %}
+                                        <span class="badge bg-info">✔️ Выполнена</span>
+                                    {% elif status == 'cancelled' %}
+                                        <span class="badge bg-danger">❌ Отменена</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if app.is_paid %}
+                                        <span class="text-success">💰 {{ app.payment_method or 'Оплачено' }}</span>
+                                    {% else %}
+                                        <span class="text-danger">❌</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="/appointments/{{ app.id }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="9" class="text-center py-4 text-muted">
+                                    <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                                    <p class="mt-2">Заявок не найдено</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Пагинация -->
+    {% if pages > 1 %}
+    <nav class="mt-3">
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ page-1 }}&status={{ current_status }}&search={{ search }}">Назад</a>
+            </li>
+            {% for p in range(1, pages+1) %}
+            <li class="page-item {% if p == page %}active{% endif %}">
+                <a class="page-link" href="?page={{ p }}&status={{ current_status }}&search={{ search }}">{{ p }}</a>
+            </li>
+            {% endfor %}
+            <li class="page-item {% if page == pages %}disabled{% endif %}">
+                <a class="page-link" href="?page={{ page+1 }}&status={{ current_status }}&search={{ search }}">Вперёд</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

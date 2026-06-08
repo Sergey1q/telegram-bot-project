@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}{% if is_edit %}Редактирование{% else %}Добавление{% endif %} услуги | Админ-панель{% endblock %}
+
+{% block content %}
+<div class="container fade-in" style="max-width: 600px;">
+    <h1 class="mb-4">{% if is_edit %}✏️ Редактирование{% else %}➕ Добавление{% endif %} услуги</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="post" action="{% if is_edit %}/services/{{ service.id }}/edit{% else %}/services/add{% endif %}">
+                <div class="mb-3">
+                    <label class="form-label">Название *</label>
+                    <input type="text" name="name" class="form-control" required value="{{ service.name if service else '' }}">
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Описание</label>
+                    <textarea name="description" class="form-control" rows="3">{{ service.description if service else '' }}</textarea>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Цена (₽) *</label>
+                        <input type="number" name="price_rub" class="form-control" required value="{{ service.price_rub|round|int if service else 0 }}" min="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Цена (⭐)</label>
+                        <input type="number" name="price_stars" class="form-control" value="{{ service.price_stars if service else 0 }}" min="0">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Длит. (мин)</label>
+                        <input type="number" name="duration_minutes" class="form-control" value="{{ service.duration_minutes if service else 60 }}" min="10">
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Категория</label>
+                    <input type="text" name="category" class="form-control" value="{{ service.category if service else '' }}">
+                </div>
+                
+                <div class="mb-3 form-check">
+                    <input type="checkbox" name="is_active" class="form-check-input" id="is_active" {% if not service or service.is_active %}checked{% endif %}>
+                    <label class="form-check-label" for="is_active">Услуга активна</label>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        {% if is_edit %}💾 Сохранить{% else %}➕ Добавить{% endif %}
+                    </button>
+                    <a href="/services" class="btn btn-outline-secondary">Отмена</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
