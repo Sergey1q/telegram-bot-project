@@ -33,6 +33,22 @@
 | Chart.js | Графики в админке |
 | Bootstrap 5 | UI админ-панели |
 
+## 📸 Скриншоты
+
+### Бот в Telegram
+<div align="center">
+  <img src="screenshots/1_start.jpg" width="300" alt="Главное меню">
+  <img src="screenshots/2_appointment.jpg" width="300" alt="Запись на услугу">
+  <img src="screenshots/3_payment.jpg" width="300" alt="Оплата Stars">
+</div>
+
+### Веб-админка
+<div align="center">
+  <img src="screenshots/5_dashboard.jpg" width="600" alt="Дашборд">
+  <img src="screenshots/6_dashboard.jpg" width="600" alt="Дашборд">
+  <img src="screenshots/7_excel.jpg" width="400" alt="Экспорт">
+</div>
+
 ## 📦 Установка
 
 ### 1. Клонируйте репозиторий
