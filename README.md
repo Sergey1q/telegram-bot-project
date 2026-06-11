@@ -43,7 +43,7 @@
 
 | Админ-меню |
 |:---:|
-| <img src="https://raw.githubusercontent.com/Sergey1q/telegram-bot-project/main/screenshots/4_admin.png" width="400"> |
+| <img src="https://raw.githubusercontent.com/Sergey1q/telegram-bot-project/main/screenshots/4_admin2.png" width="400"> |
 
 ### 🌐 Веб-админка
 
