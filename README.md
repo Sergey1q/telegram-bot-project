@@ -35,23 +35,29 @@
 
 ## 📸 Скриншоты
 
-### Бот в Telegram
-<div align="center">
-  <img src="screenshots/1_start.jpg" width="300" alt="Главное меню">
-  <img src="screenshots/2_appointment.jpg" width="300" alt="Запись на услугу">
-  <img src="screenshots/3_payment.jpg" width="300" alt="Оплата Stars">
-</div>
+### 🤖 Бот в Telegram
 
-### Веб-админка
-<div align="center">
-  <img src="screenshots/5_dashboard.jpg" width="600" alt="Дашборд">
-  <img src="screenshots/6_dashboard.jpg" width="600" alt="Дашборд">
-  <img src="screenshots/7_excel.jpg" width="400" alt="Экспорт">
-</div>
+| Главное меню | Запись на услугу | Оплата Stars |
+|:---:|:---:|:---:|
+| <img src="https://raw.githubusercontent.com/Sergey1q/telegram-bot-project/main/screenshots/1_start.png" width="250"> | <img src="https://raw.githubusercontent.com/Sergey1q/telegram-bot-project/main/screenshots/2_appointment.png" width="250"> | <img src="https://raw.githubusercontent.com/Sergey1q/telegram-bot-project/main/screenshots/3_payment.png" width="250"> |
+
+| Админ-меню |
+|:---:|
+| <img src="https://raw.githubusercontent.com/Sergey1q/telegram-bot-project/main/screenshots/4_admin.png" width="400"> |
+
+### 🌐 Веб-админка
+
+| Дашборд | Заявки |
+|:---:|:---:|
+| <img src="https://raw.githubusercontent.com/Sergey1q/telegram-bot-project/main/screenshots/5_dashboard.png" width="450"> | <img src="https://raw.githubusercontent.com/Sergey1q/telegram-bot-project/main/screenshots/6_dashboard.png" width="450"> |
+
+| Экспорт в Excel |
+|:---:|
+| <img src="https://raw.githubusercontent.com/Sergey1q/telegram-bot-project/main/screenshots/7_excel.png" width="500"> |
 
 ## 📦 Установка
 
 ### 1. Клонируйте репозиторий
 ```bash
-git clone https://github.com/Sergey1q/telegram-bot-project.git
+git clone https://github.com/ваш-username/telegram-bot-project.git
 cd telegram-bot-project
